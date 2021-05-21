@@ -8,7 +8,7 @@ Nim templates.
 [[https://kaushalmodi.github.io/ptr_math/][https://kaushalmodi.github.io/ptr_math/]]
 * Installation
 #+begin_example
-nimble install https://kaushalmodi.github.io/ptr_math
+nimble install https://github.com/kaushalmodi/ptr_math
 #+end_example
 * Quick Start
 #+begin_src nim
