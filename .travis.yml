@@ -54,7 +54,7 @@ deploy:
   github-token: "${GITHUB_OAUTH_TOKEN}"
   keep-history: false
   on:
-    branch: master
+    branch: main
 
 notifications:
   email:
