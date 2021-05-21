@@ -69,5 +69,4 @@ nim docs
 #+end_example
 
 * Credit
-Most of the code in this library is from [[https://forum.nim-lang.org/t/1188#7366][this code snippet]] whose
-author was a user /Jehan/ from Nim Forum.
+Most of the code in this library is from [[https://forum.nim-lang.org/t/1188#7366][this code snippet]] authored by Nim Forum user /Jehan/.
