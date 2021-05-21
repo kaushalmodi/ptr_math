@@ -1,0 +1,20 @@
+# https://stackoverflow.com/a/25592735/1219634
+
+# Ignore all
+*
+
+# Unignore all with extensions
+!*.*
+
+# Unignore all dirs
+!*/
+
+# Unignore few files
+!LICENSE
+
+#*.*#
+*#*.*#
+
+public/
+*.html
+nimdoc.out.css

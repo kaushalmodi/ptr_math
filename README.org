@@ -1,0 +1,73 @@
+#+title: Pointer Arithmetic in Nim
+#+author: Kaushal Modi
+
+This module implements basic pointer arithmetic functionality using
+Nim templates.
+
+* Documentation
+[[https://kaushalmodi.github.io/ptr_math/][https://kaushalmodi.github.io/ptr_math/]]
+* Installation
+#+begin_example
+nimble install https://kaushalmodi.github.io/ptr_math
+#+end_example
+* Quick Start
+#+begin_src nim
+import std/[strformat]
+import ptr_math
+
+var
+  a: array[0 .. 3, int]
+  p = addr(a[0])          # p is pointing to a[0]
+
+for i, _ in a:
+  a[i] += i
+echo &"before                    : a = {a}"
+
+ptrMath:
+  p += 1                  # p is now pointing to a[1]
+  p[] = 100               # p[] is accessing the contents of a[1]
+  echo &"after p += 1; p[] = 100   : a = {a}"
+
+  p[0] = 200              # .. so does p[0]
+  echo &"after p[0] = 200          : a = {a}"
+
+  p[1] -= 2               # p[1] is accessing the contents of a[2]
+  echo &"after p[1] -= 2           : a = {a}"
+
+  p[2] += 50              # p[2] is accessing the contents of a[3]
+  echo &"after p[2] += 50          : a = {a}"
+
+  p += 2                  # p is now pointing to a[3]
+  p[-1] += 77             # p[-1] is accessing the contents of a[2]
+  echo &"after p += 2; p[-1] += 77 : a = {a}"
+
+echo &"a[0] = p[-3] = {p[-3]}"
+echo &"a[1] = p[-2] = {p[-2]}"
+echo &"a[2] = p[-1] = {p[-1]}"
+echo &"a[3] = p[0] = {p[0]}"
+#+end_src
+
+* Development
+** Requirement
+This library is tested on Travis using Nim /devel/ version. The
+version was 1.5.1 as of writing this on <2021-05-20 Thu>.
+** Prep
+Once you clone this repo, do the below step *first*, before you
+execute any of the below "nim" commands:
+#+begin_example
+# cd to the repo root
+git clone https://github.com/kaushalmodi/nim_config && cp nim_config/config.nims .
+#+end_example
+** Testing
+#+begin_example
+nim test
+#+end_example
+** Generate doc
+Create the HTML page and associated search index in ~<repo>/public/~.
+#+begin_example
+nim docs
+#+end_example
+
+* Credit
+Most of the code in this library is from [[https://forum.nim-lang.org/t/1188#7366][this code snippet]] whose
+author was a user /Jehan/ from Nim Forum.
