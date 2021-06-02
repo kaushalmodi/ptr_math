@@ -165,3 +165,12 @@ template ptrMath*(body: untyped) =
     p = p - offset
 
   body
+
+
+when isMainModule:
+
+  # https://github.com/nim-lang/Nim/issues/18157#issuecomment-853323724
+  # Below call to `ptrMath` is needed so that the inner templates get
+  # generated and picked up by docgen.
+  ptrMath:
+    discard
