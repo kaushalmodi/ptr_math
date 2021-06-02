@@ -39,8 +39,8 @@ install:
 
 script:
   - cd "${TRAVIS_BUILD_DIR}"
-  - nim pullConfig # Get my global config.nims
   - nim -v
+  - nim pullConfig # Get my global config.nims
   # - nimble install --depsOnly --accept
   - nim test
   - nim docs
