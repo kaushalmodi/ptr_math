@@ -39,10 +39,9 @@ install:
 
 script:
   - cd "${TRAVIS_BUILD_DIR}"
+  - nim pullConfig # Get my global config.nims
   - nim -v
   # - nimble install --depsOnly --accept
-  - git clone https://github.com/kaushalmodi/nim_config && cp nim_config/config.nims . # Get my global config.nims
-  - eval "nim c ${NIMFILE}"
   - nim test
   - nim docs
 
