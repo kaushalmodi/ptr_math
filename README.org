@@ -1,8 +1,7 @@
 #+title: Pointer Arithmetic in Nim
 #+author: Kaushal Modi
 
-This module implements basic pointer arithmetic functionality using
-Nim templates.
+This module implements basic pointer arithmetic functionality.
 
 * Documentation
 [[https://kaushalmodi.github.io/ptr_math/][https://kaushalmodi.github.io/ptr_math/]]

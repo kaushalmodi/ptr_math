@@ -38,7 +38,7 @@ runnableExamples:
   doAssert a == [0, 200, 77, 53]
 ##
 
-template `+`*[T](p: ptr T, offset: int): ptr T =
+proc `+`*[T](p: ptr T, offset: int): ptr T =
   ## Increments pointer `p` by `offset` that jumps memory in increments of
   ## the size of `T`.
   runnableExamples:
@@ -57,11 +57,11 @@ template `+`*[T](p: ptr T, offset: int): ptr T =
     doAssert p2[0].i == 500
     doAssert p2[-1].f == 4.5
   ##
-  cast[ptr T](cast[ByteAddress](p) +% (offset * sizeof(T)))
-  #                               `+%` treats x and y inputs as unsigned
+  return cast[ptr T](cast[ByteAddress](p) +% (offset * sizeof(T)))
+  #                                      `+%` treats x and y inputs as unsigned
   # and adds them: https://nim-lang.github.io/Nim/system.html#%2B%25%2Cint%2Cint
 
-template `-`*[T](p: ptr T, offset: int): ptr T =
+proc `-`*[T](p: ptr T, offset: int): ptr T =
   ## Decrements pointer `p` by `offset` that jumps memory in increments of
   ## the size of `T`.
   runnableExamples:
@@ -80,34 +80,9 @@ template `-`*[T](p: ptr T, offset: int): ptr T =
     doAssert p1[-1].b == true
     doAssert p1[1].f == 6.7
   ##
-  cast[ptr T](cast[ByteAddress](p) -% (offset * sizeof(T)))
+  return cast[ptr T](cast[ByteAddress](p) -% (offset * sizeof(T)))
 
-template `[]`*[T](p: ptr T, offset: int): T =
-  ## Retrieves the value from `p[offset]`.
-  runnableExamples:
-    var
-      a = [1, 3, 5, 7]
-      p = addr(a[0])
-
-    doAssert p[] == a[0]
-    doAssert p[0] == a[0]
-    doAssert p[2] == a[2]
-  ##
-  (p + offset)[]
-
-template `[]=`*[T](p: ptr T, offset: int, val: T) =
-  ## Assigns the value at memory location pointed by `p[offset]`.
-  runnableExamples:
-    var
-      a = [1.3, -9.5, 100.0]
-      p = addr(a[1])
-
-    p[0] = 123.456
-    doAssert a[1] == 123.456
-  ##
-  (p + offset)[] = val
-
-template `+=`*[T](p: ptr T, offset: int) =
+proc `+=`*[T](p: var ptr T, offset: int) =
   ## Increments pointer `p` *in place* by `offset` that jumps memory
   ## in increments of the size of `T`.
   runnableExamples:
@@ -127,7 +102,7 @@ template `+=`*[T](p: ptr T, offset: int) =
   ##
   p = p + offset
 
-template `-=`*[T](p: ptr T, offset: int) =
+proc `-=`*[T](p: var ptr T, offset: int) =
   ## Decrements pointer `p` *in place* by `offset` that jumps memory
   ## in increments of the size of `T`.
   runnableExamples:
@@ -146,6 +121,31 @@ template `-=`*[T](p: ptr T, offset: int) =
     doAssert p[].f == 2.3
   ##
   p = p - offset
+
+proc `[]=`*[T](p: ptr T, offset: int, val: T) =
+  ## Assigns the value at memory location pointed by `p[offset]`.
+  runnableExamples:
+    var
+      a = [1.3, -9.5, 100.0]
+      p = addr(a[1])
+
+    p[0] = 123.456
+    doAssert a[1] == 123.456
+  ##
+  (p + offset)[] = val
+
+proc `[]`*[T](p: ptr T, offset: int): var T =
+  ## Retrieves the value from `p[offset]`.
+  runnableExamples:
+    var
+      a = [1, 3, 5, 7]
+      p = addr(a[0])
+
+    doAssert p[] == a[0]
+    doAssert p[0] == a[0]
+    doAssert p[2] == a[2]
+  ##
+  return (p + offset)[]
 
 
 when isMainModule:
