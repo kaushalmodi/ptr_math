@@ -54,3 +54,12 @@ suite "basic":
       check p[-1].i == 100
       p[1].f = 456.789
       check a[2] == MyObject(i: 500, f: 456.789, b: true)
+
+  test "multiple calls":
+    ptrMath:
+      p += 1
+      check p[0].i == 300
+
+    ptrMath:
+      p = addr(a[2])
+      check p[0].i == 500
