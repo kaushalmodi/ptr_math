@@ -47,15 +47,17 @@ echo &"a[3] = p[0] = {p[0]}"
 
 * Development
 ** Requirement
-This library is tested on Travis using Nim /devel/ version. The
-version was 1.5.1 as of writing this on <2021-05-20 Thu>.
+This library is tested using Nim /devel/ version. The version was
+1.5.1 as of writing this on <2021-06-03 Thu>.
 ** Prep
-Once you clone this repo, do the below step *first*, before you
-execute any of the below "nim" commands:
+Once you clone this repo, cd to the cloned directory and run the below
+command *first* (before you execute any of the below "nim" commands):
 #+begin_example
-# cd to the repo root
-git clone https://github.com/kaushalmodi/nim_config && cp nim_config/config.nims .
+nim pullConfig
 #+end_example
+This will clone my global ~config.nims~ file into a
+~<repo>/nim_config/~ directory. That will enable running the ~nim
+test~ and ~nim docs~ commands.
 ** Testing
 #+begin_example
 nim test
@@ -67,4 +69,5 @@ nim docs
 #+end_example
 
 * Credit
-Most of the code in this library is from [[https://forum.nim-lang.org/t/1188#7366][this code snippet]] authored by Nim Forum user /Jehan/.
+Most of the code in this library is from [[https://forum.nim-lang.org/t/1188#7366][this code snippet]] authored by
+Nim Forum user /Jehan/.
