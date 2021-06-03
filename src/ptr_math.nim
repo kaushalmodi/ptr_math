@@ -40,7 +40,7 @@ template ptrMath*(body: untyped) =
       doAssert a[2] == 77
     doAssert a == [0, 200, 77, 53]
   ##
-  template `+`[T](p: ptr T, offset: int): ptr T =
+  template `+`[T](p: ptr T, offset: int): ptr T {.used.} =
     ## Increments pointer `p` by `offset` that jumps memory in increments of
     ## the size of `T`.
     ## This can be used only within the `ptrMath:` template.
@@ -66,7 +66,7 @@ template ptrMath*(body: untyped) =
     #                               `+%` treats x and y inputs as unsigned
     # and adds them: https://nim-lang.github.io/Nim/system.html#%2B%25%2Cint%2Cint
 
-  template `-`[T](p: ptr T, offset: int): ptr T =
+  template `-`[T](p: ptr T, offset: int): ptr T {.used.} =
     ## Decrements pointer `p` by `offset` that jumps memory in increments of
     ## the size of `T`.
     ## This can be used only within the `ptrMath:` template.
@@ -91,7 +91,7 @@ template ptrMath*(body: untyped) =
     ##
     cast[ptr T](cast[ByteAddress](p) -% (offset * sizeof(T)))
 
-  template `[]`[T](p: ptr T, offset: int): T =
+  template `[]`[T](p: ptr T, offset: int): T {.used.} =
     ## Retrieves the value from `p[offset]`.
     ## This can be used only within the `ptrMath:` template.
     runnableExamples:
@@ -106,7 +106,7 @@ template ptrMath*(body: untyped) =
     ##
     (p + offset)[]
 
-  template `[]=`[T](p: ptr T, offset: int, val: T) =
+  template `[]=`[T](p: ptr T, offset: int, val: T) {.used.} =
     ## Assigns the value at memory location pointed by `p[offset]`.
     ## This can be used only within the `ptrMath:` template.
     runnableExamples:
@@ -120,7 +120,7 @@ template ptrMath*(body: untyped) =
     ##
     (p + offset)[] = val
 
-  template `+=`[T](p: ptr T, offset: int) =
+  template `+=`[T](p: ptr T, offset: int) {.used.} =
     ## Increments pointer `p` *in place* by `offset` that jumps memory
     ## in increments of the size of `T`.
     ## This can be used only within the `ptrMath:` template.
@@ -142,7 +142,7 @@ template ptrMath*(body: untyped) =
     ##
     p = p + offset
 
-  template `-=`[T](p: ptr T, offset: int) =
+  template `-=`[T](p: ptr T, offset: int) {.used.} =
     ## Decrements pointer `p` *in place* by `offset` that jumps memory
     ## in increments of the size of `T`.
     ## This can be used only within the `ptrMath:` template.
