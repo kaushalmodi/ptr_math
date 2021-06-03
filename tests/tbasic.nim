@@ -48,3 +48,14 @@ suite "basic":
     check p[-1].i == 100
     p[1].f = 456.789
     check a[2] == MyObject(i: 500, f: 456.789, b: true)
+
+  test "immutable pointer":
+    let
+      pImm = addr(a[1])
+    check pImm[-1].i == 100
+    check pImm[0].i == 300
+    check pImm[1].i == 500
+    # Below tests that pImm itself isn't getting modified, but in fact
+    # pImm[0] is auto-dereferencing to a[1], and a is mutable.
+    pImm[0] = MyObject(i: 1, f: 2.0, b: false)
+    check a[1] == MyObject(i: 1, f: 2.0, b: false)
