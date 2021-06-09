@@ -61,6 +61,27 @@ proc `+`*[T](p: ptr T, offset: int): ptr T =
   #                                      `+%` treats x and y inputs as unsigned
   # and adds them: https://nim-lang.github.io/Nim/system.html#%2B%25%2Cint%2Cint
 
+proc `+`*(p: pointer, offset: int): pointer =
+  ## Increments pointer `p` by `offset` that jumps memory in increments of
+  ## single bytes.
+  runnableExamples:
+    type
+      MyObject = object
+        i: int
+        f: float
+        b: bool
+    var
+      a = [MyObject(i: 100, f: 2.3, b: true),
+           MyObject(i: 300, f: 4.5, b: false),
+           MyObject(i: 500, f: 6.7, b: true)]
+      p = cast[pointer](addr(a[0]))
+      p2 = p + (2*sizeof(MyObject))
+
+    doAssert cast[ptr MyObject](p2)[0].i == 500
+    doAssert cast[ptr MyObject](p2)[-1].f == 4.5
+  ##
+  return cast[pointer](cast[ByteAddress](p) +% offset)
+
 proc `-`*[T](p: ptr T, offset: int): ptr T =
   ## Decrements pointer `p` by `offset` that jumps memory in increments of
   ## the size of `T`.
@@ -82,6 +103,27 @@ proc `-`*[T](p: ptr T, offset: int): ptr T =
   ##
   return cast[ptr T](cast[ByteAddress](p) -% (offset * sizeof(T)))
 
+proc `-`*(p: pointer, offset: int): pointer =
+  ## Decrements pointer `p` by `offset` that jumps memory in increments of
+  ## single bytes.
+  runnableExamples:
+    type
+      MyObject = object
+        i: int
+        f: float
+        b: bool
+    var
+      a = [MyObject(i: 100, f: 2.3, b: true),
+           MyObject(i: 300, f: 4.5, b: false),
+           MyObject(i: 500, f: 6.7, b: true)]
+      p = cast[pointer](addr(a[2]))
+      p1 = p - (1*sizeof(MyObject))
+    doAssert cast[ptr MyObject](p1)[0].i == 300
+    doAssert cast[ptr MyObject](p1)[-1].b == true
+    doAssert cast[ptr MyObject](p1)[1].f == 6.7
+  ##
+  return cast[pointer](cast[ByteAddress](p) -% offset)
+
 proc `+=`*[T](p: var ptr T, offset: int) =
   ## Increments pointer `p` *in place* by `offset` that jumps memory
   ## in increments of the size of `T`.
@@ -102,6 +144,26 @@ proc `+=`*[T](p: var ptr T, offset: int) =
   ##
   p = p + offset
 
+proc `+=`*(p: var pointer, offset: int) =
+  ## Increments pointer `p` *in place* by `offset` that jumps memory
+  ## in increments of single bytes.
+  runnableExamples:
+    type
+      MyObject = object
+        i: int
+        f: float
+        b: bool
+    var
+      a = [MyObject(i: 100, f: 2.3, b: true),
+           MyObject(i: 300, f: 4.5, b: false),
+           MyObject(i: 500, f: 6.7, b: true)]
+      p = cast[pointer](addr(a[0]))
+
+    p += (1*sizeof(MyObject))
+    doAssert cast[ptr MyObject](p)[].i == 300
+  ##
+  p = p + offset
+
 proc `-=`*[T](p: var ptr T, offset: int) =
   ## Decrements pointer `p` *in place* by `offset` that jumps memory
   ## in increments of the size of `T`.
@@ -119,6 +181,26 @@ proc `-=`*[T](p: var ptr T, offset: int) =
 
     p -= 2
     doAssert p[].f == 2.3
+  ##
+  p = p - offset
+
+proc `-=`*(p: var pointer, offset: int) =
+  ## Decrements pointer `p` *in place* by `offset` that jumps memory
+  ## in increments of single bytes.
+  runnableExamples:
+    type
+      MyObject = object
+        i: int
+        f: float
+        b: bool
+    var
+      a = [MyObject(i: 100, f: 2.3, b: true),
+           MyObject(i: 300, f: 4.5, b: false),
+           MyObject(i: 500, f: 6.7, b: true)]
+      p = cast[pointer](addr(a[2]))
+
+    p -= (2*sizeof(MyObject))
+    doAssert cast[ptr MyObject](p)[].f == 2.3
   ##
   p = p - offset
 
