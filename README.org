@@ -1,6 +1,9 @@
 #+title: Pointer Arithmetic in Nim
 #+author: Kaushal Modi
 
+[[https://github.com/kaushalmodi/ptr_math/actions/workflows/test.yml][https://github.com/kaushalmodi/ptr_math/actions/workflows/test.yml/badge.svg]]
+[[https://github.com/kaushalmodi/ptr_math/actions/workflows/docs.yml][https://github.com/kaushalmodi/ptr_math/actions/workflows/docs.yml/badge.svg]]
+
 This module implements basic pointer arithmetic functionality.
 
 * Documentation
