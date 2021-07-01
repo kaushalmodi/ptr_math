@@ -1,5 +1,3 @@
-Introduction	index.html#introduction	 Introduction	
-Source	index.html#source	 Source	
 `+`	index.html#+,ptr.T,int	ptr_math: `+`[T](p: ptr T; offset: int): ptr T	
 `+`	index.html#+,pointer,int	ptr_math: `+`(p: pointer; offset: int): pointer	
 `-`	index.html#-,ptr.T,int	ptr_math: `-`[T](p: ptr T; offset: int): ptr T	
@@ -10,3 +8,5 @@ Source	index.html#source	 Source
 `-=`	index.html#-=,pointer,int	ptr_math: `-=`(p: var pointer; offset: int)	
 `[]=`	index.html#[]=,ptr.T,int,T	ptr_math: `[]=`[T](p: ptr T; offset: int; val: T)	
 `[]`	index.html#[],ptr.T,int	ptr_math: `[]`[T](p: ptr T; offset: int): var T	
+Introduction	index.html#introduction	 Introduction	
+Source	index.html#source	 Source	
