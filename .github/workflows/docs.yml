@@ -10,7 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: jiro4989/setup-nim-action@v1
+      - uses: alaviss/setup-nim@0.1.1
+        with:
+          path: 'nim'
+          version: 'devel'
       - name: Pull kaushalmodi's global config.nims
         run: nim pullConfig
       - name: Generate docs

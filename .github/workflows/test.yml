@@ -16,9 +16,13 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+        nim: ['devel', 'version-1-4']
     steps:
       - uses: actions/checkout@v2
-      - uses: jiro4989/setup-nim-action@v1
+      - uses: alaviss/setup-nim@0.1.1
+        with:
+          path: 'nim'
+          version: ${{ matrix.nim }}
       - name: Pull kaushalmodi's global config.nims
         run: nim pullConfig
       - name: Run tests
