@@ -1,12 +1,12 @@
-`+`	index.html#+,ptr.T,int	ptr_math: `+`[T](p: ptr T; offset: int): ptr T	
-`+`	index.html#+,pointer,int	ptr_math: `+`(p: pointer; offset: int): pointer	
-`-`	index.html#-,ptr.T,int	ptr_math: `-`[T](p: ptr T; offset: int): ptr T	
-`-`	index.html#-,pointer,int	ptr_math: `-`(p: pointer; offset: int): pointer	
-`+=`	index.html#+=,ptr.T,int	ptr_math: `+=`[T](p: var ptr T; offset: int)	
-`+=`	index.html#+=,pointer,int	ptr_math: `+=`(p: var pointer; offset: int)	
-`-=`	index.html#-=,ptr.T,int	ptr_math: `-=`[T](p: var ptr T; offset: int)	
-`-=`	index.html#-=,pointer,int	ptr_math: `-=`(p: var pointer; offset: int)	
-`[]=`	index.html#[]=,ptr.T,int,T	ptr_math: `[]=`[T](p: ptr T; offset: int; val: T)	
-`[]`	index.html#[],ptr.T,int	ptr_math: `[]`[T](p: ptr T; offset: int): var T	
+`+`	index.html#+,ptr.T,S	ptr_math: `+`[T; S: SomeInteger](p: ptr T; offset: S): ptr T	
+`+`	index.html#+,pointer,S	ptr_math: `+`[S: SomeInteger](p: pointer; offset: S): pointer	
+`-`	index.html#-,ptr.T,S	ptr_math: `-`[T; S: SomeInteger](p: ptr T; offset: S): ptr T	
+`-`	index.html#-,pointer,S	ptr_math: `-`[S: SomeInteger](p: pointer; offset: S): pointer	
+`+=`	index.html#+=,ptr.T,S	ptr_math: `+=`[T; S: SomeInteger](p: var ptr T; offset: S)	
+`+=`	index.html#+=,pointer,S	ptr_math: `+=`[S: SomeInteger](p: var pointer; offset: S)	
+`-=`	index.html#-=,ptr.T,S	ptr_math: `-=`[T; S: SomeInteger](p: var ptr T; offset: S)	
+`-=`	index.html#-=,pointer,S	ptr_math: `-=`[S: SomeInteger](p: var pointer; offset: S)	
+`[]=`	index.html#[]=,ptr.T,S,T	ptr_math: `[]=`[T; S: SomeInteger](p: ptr T; offset: S; val: T)	
+`[]`	index.html#[],ptr.T,S	ptr_math: `[]`[T; S: SomeInteger](p: ptr T; offset: S): var T	
 Introduction	index.html#introduction	 Introduction	
 Source	index.html#source	 Source	
