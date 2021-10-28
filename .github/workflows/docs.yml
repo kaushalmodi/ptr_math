@@ -1,6 +1,7 @@
 name: GenerateDocs
 
 on:
+  workflow_dispatch: # Manually trigger this workflow
   push:
     branches:
       - main
