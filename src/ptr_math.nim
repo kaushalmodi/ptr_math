@@ -10,6 +10,7 @@
 ## `Repo link <https://github.com/kaushalmodi/ptr_math>`_
 ##
 ## The code in this module is mostly from `this code snippet <https://forum.nim-lang.org/t/1188#7366>`_ on Nim Forum.
+
 runnableExamples:
   var
     a: array[0 .. 3, int]
@@ -38,7 +39,7 @@ runnableExamples:
   doAssert a == [0, 200, 77, 53]
 ##
 
-proc `+`*[T](p: ptr T, offset: int): ptr T =
+proc `+`*[T; S: SomeInteger](p: ptr T, offset: S): ptr T =
   ## Increments pointer `p` by `offset` that jumps memory in increments of
   ## the size of `T`.
   runnableExamples:
@@ -57,11 +58,11 @@ proc `+`*[T](p: ptr T, offset: int): ptr T =
     doAssert p2[0].i == 500
     doAssert p2[-1].f == 4.5
   ##
-  return cast[ptr T](cast[ByteAddress](p) +% (offset * sizeof(T)))
+  return cast[ptr T](cast[ByteAddress](p) +% (int(offset) * sizeof(T)))
   #                                      `+%` treats x and y inputs as unsigned
   # and adds them: https://nim-lang.github.io/Nim/system.html#%2B%25%2Cint%2Cint
 
-proc `+`*(p: pointer, offset: int): pointer =
+proc `+`*[S: SomeInteger](p: pointer, offset: S): pointer =
   ## Increments pointer `p` by `offset` that jumps memory in increments of
   ## single bytes.
   runnableExamples:
@@ -80,9 +81,9 @@ proc `+`*(p: pointer, offset: int): pointer =
     doAssert cast[ptr MyObject](p2)[0].i == 500
     doAssert cast[ptr MyObject](p2)[-1].f == 4.5
   ##
-  return cast[pointer](cast[ByteAddress](p) +% offset)
+  return cast[pointer](cast[ByteAddress](p) +% int(offset))
 
-proc `-`*[T](p: ptr T, offset: int): ptr T =
+proc `-`*[T; S: SomeInteger](p: ptr T, offset: S): ptr T =
   ## Decrements pointer `p` by `offset` that jumps memory in increments of
   ## the size of `T`.
   runnableExamples:
@@ -101,9 +102,9 @@ proc `-`*[T](p: ptr T, offset: int): ptr T =
     doAssert p1[-1].b == true
     doAssert p1[1].f == 6.7
   ##
-  return cast[ptr T](cast[ByteAddress](p) -% (offset * sizeof(T)))
+  return cast[ptr T](cast[ByteAddress](p) -% (int(offset) * sizeof(T)))
 
-proc `-`*(p: pointer, offset: int): pointer =
+proc `-`*[S: SomeInteger](p: pointer, offset: S): pointer =
   ## Decrements pointer `p` by `offset` that jumps memory in increments of
   ## single bytes.
   runnableExamples:
@@ -122,9 +123,9 @@ proc `-`*(p: pointer, offset: int): pointer =
     doAssert cast[ptr MyObject](p1)[-1].b == true
     doAssert cast[ptr MyObject](p1)[1].f == 6.7
   ##
-  return cast[pointer](cast[ByteAddress](p) -% offset)
+  return cast[pointer](cast[ByteAddress](p) -% int(offset))
 
-proc `+=`*[T](p: var ptr T, offset: int) =
+proc `+=`*[T; S: SomeInteger](p: var ptr T, offset: S) =
   ## Increments pointer `p` *in place* by `offset` that jumps memory
   ## in increments of the size of `T`.
   runnableExamples:
@@ -144,7 +145,7 @@ proc `+=`*[T](p: var ptr T, offset: int) =
   ##
   p = p + offset
 
-proc `+=`*(p: var pointer, offset: int) =
+proc `+=`*[S: SomeInteger](p: var pointer, offset: S) =
   ## Increments pointer `p` *in place* by `offset` that jumps memory
   ## in increments of single bytes.
   runnableExamples:
@@ -164,7 +165,7 @@ proc `+=`*(p: var pointer, offset: int) =
   ##
   p = p + offset
 
-proc `-=`*[T](p: var ptr T, offset: int) =
+proc `-=`*[T; S: SomeInteger](p: var ptr T, offset: S) =
   ## Decrements pointer `p` *in place* by `offset` that jumps memory
   ## in increments of the size of `T`.
   runnableExamples:
@@ -184,7 +185,7 @@ proc `-=`*[T](p: var ptr T, offset: int) =
   ##
   p = p - offset
 
-proc `-=`*(p: var pointer, offset: int) =
+proc `-=`*[S: SomeInteger](p: var pointer, offset: S) =
   ## Decrements pointer `p` *in place* by `offset` that jumps memory
   ## in increments of single bytes.
   runnableExamples:
@@ -204,7 +205,7 @@ proc `-=`*(p: var pointer, offset: int) =
   ##
   p = p - offset
 
-proc `[]=`*[T](p: ptr T, offset: int, val: T) =
+proc `[]=`*[T; S: SomeInteger](p: ptr T, offset: S, val: T) =
   ## Assigns the value at memory location pointed by `p[offset]`.
   runnableExamples:
     var
@@ -216,7 +217,7 @@ proc `[]=`*[T](p: ptr T, offset: int, val: T) =
   ##
   (p + offset)[] = val
 
-proc `[]`*[T](p: ptr T, offset: int): var T =
+proc `[]`*[T; S: SomeInteger](p: ptr T, offset: S): var T =
   ## Retrieves the value from `p[offset]`.
   runnableExamples:
     var
