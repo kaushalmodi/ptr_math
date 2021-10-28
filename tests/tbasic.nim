@@ -59,3 +59,10 @@ suite "basic":
     # pImm[0] is auto-dereferencing to a[1], and a is mutable.
     pImm[0] = MyObject(i: 1, f: 2.0, b: false)
     check a[1] == MyObject(i: 1, f: 2.0, b: false)
+
+  test "unsigned integer offset":
+    p = addr(a[0])
+    p += 1'u
+    check p[1'u8].i == 500
+    p[1'u32].i = 10
+    check a[2].i == 10
