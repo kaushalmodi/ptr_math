@@ -231,6 +231,155 @@ proc `[]`*[T; S: SomeInteger](p: ptr T, offset: S): var T =
   return (p + offset)[]
 
 
+iterator items*[T](start: ptr T, stopBefore: ptr T): lent T =
+  ## Iterates over contiguous `ptr T`s, from `start` excluding `stopBefore`. Yields immutable `T`.
+  runnableExamples:
+    var
+      a = [1, 3, 5, 7]
+      p = addr(a[0])
+      e = p + a.len
+      sum = 0
+    for i in items(p, e):
+      sum += i
+    doAssert(sum == 16)
+  ##
+  var p = start
+  while p != stopBefore:
+    yield p[] 
+    p += 1
+
+iterator mitems*[T](start: ptr T, stopBefore: ptr T): var T =
+  ## Iterates over contiguous `ptr T`s, from `start` excluding `stopBefore`. Yields mutable `T`.
+  runnableExamples:
+    var
+      a = [1, 3, 5, 7]
+      p = addr(a[0])
+      e = p + a.len
+      sum = 0
+    for i in mitems(p, e):
+      inc i
+    for i in items(p, e):
+      sum += i
+    doAssert(sum == 20)
+  ##
+  var p = start
+  while p != stopBefore:
+    yield p[] 
+    p += 1
+
+iterator items*[T](uarray: UncheckedArray[T] | ptr T, len: SomeInteger): lent T =
+  ## Iterates over `UncheckedArray[T]` or `ptr T` array with length. Yields immutable `T`.
+  runnableExamples:
+    let
+      l = 4
+      a = cast[ptr UncheckedArray[int]](alloc0(sizeof(int) * l))
+      b = [1, 3, 5, 7]
+
+    copyMem(a, b[0].unsafeAddr, sizeof(int) * l) 
+    var i = 0
+    for val in items(a[], l):
+      doAssert(val == b[i])
+      inc i
+
+    let
+      p = cast[ptr int](a)
+    i = 0
+    for val in items(p, l):
+      doAssert(val == b[i])
+      inc i
+    dealloc(a)
+  ##
+  for i in 0..<len:
+    yield uarray[i]
+
+# As of 1.6.0 mitems and mpairs for var UncheckedArray[t] and ptr T cannot be combined
+# like their immutable versions. https://forum.nim-lang.org/t/8557#55560
+
+iterator mitems*[T](uarray: var UncheckedArray[T], len: SomeInteger): var T =
+  ## Iterates over `var UncheckedArray[T]` with length. Yields mutable `T`.
+  runnableExamples:
+    var a = cast[ptr UncheckedArray[int]](alloc0(sizeof(int) * 4))
+    for i in mitems(a[], 4):
+      inc i
+    doAssert(a[0] == 1)
+    dealloc(a)
+  ##
+  for i in 0..<len:
+    yield uarray[i]
+
+iterator mitems*[T](p: ptr T, len: SomeInteger): var T =
+  ## Iterates over `ptr T` with length. Yields mutable `T`.
+  runnableExamples:
+    var a = cast[ptr int](alloc0(sizeof(int) * 4))
+    for i in mitems(a, 4):
+      inc i
+    doAssert(a[0] == 1)
+    dealloc(a)
+  ##
+  for i in 0..<len:
+    yield p[i]
+
+iterator pairs*[T; S:SomeInteger](uarray: UncheckedArray[T] | ptr T, len: S): (S, lent T) =
+  ## Iterates over `UncheckedArray[T]` or `ptr T` array with length. Yields immutable `(index, uarray[index])`.
+  runnableExamples:
+    let
+      l = 4
+      a = [1, 3, 5, 7]
+      b = cast[ptr UncheckedArray[int]](alloc0(sizeof(int) * l))
+      c = cast[ptr int](alloc0(sizeof(int) * l))
+
+    copyMem(b, a[0].unsafeAddr, sizeof(int) * l) 
+    copyMem(c, a[0].unsafeAddr, sizeof(int) * l) 
+
+    for i, val in pairs(b[], l):
+      doAssert(a[i] == val)
+
+    for i, val in pairs(c, l):
+      doAssert(a[i] == val)
+    dealloc(b)
+    dealloc(c)
+  ##
+  for i in S(0)..<len:
+    yield (i, uarray[i])
+
+
+iterator mpairs*[T; S: SomeInteger](uarray: var UncheckedArray[T], len: S): (S, var T) =
+  ## Iterates over `var UncheckedArray[T]` with length. Yields `(index, uarray[index])` with mutable `T`.
+  runnableExamples:
+    let
+      l = 4
+      a = [1, 3, 5, 7]
+      b = cast[ptr UncheckedArray[int]](alloc0(sizeof(int) * l))
+
+    copyMem(b, a[0].unsafeAddr, sizeof(int) * l) 
+
+    for i, val in mpairs(b[], l):
+      inc val
+      doAssert(a[i] + 1 == val)
+
+    dealloc(b)
+  ##
+  for i in S(0)..<len:
+    yield (i, uarray[i])
+
+iterator mpairs*[T; S: SomeInteger](p: ptr T, len: S): (S, var T) =
+  ## Iterates over `ptr T` array with length. Yields `(index, p[index])` with mutable `T`.
+  runnableExamples:
+    let
+      l = 4
+      a = [1, 3, 5, 7]
+      b = cast[ptr int](alloc0(sizeof(int) * l))
+
+    copyMem(b, a[0].unsafeAddr, sizeof(int) * l) 
+
+    for i, val in mpairs(b, l):
+      inc val
+      doAssert(a[i] + 1 == val)
+    dealloc(b)
+  ##
+  for i in S(0)..<len:
+    yield (i, p[i])
+
 when isMainModule:
   import std/[strformat]
 
