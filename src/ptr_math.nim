@@ -10,6 +10,8 @@
 ## `Repo link <https://github.com/kaushalmodi/ptr_math>`_
 ##
 ## The code in this module is mostly from `this code snippet <https://forum.nim-lang.org/t/1188#7366>`_ on Nim Forum.
+import std / [macros, decls]
+export decls
 
 runnableExamples:
   var
@@ -380,6 +382,136 @@ iterator mpairs*[T; S: SomeInteger](p: ptr T, len: S): (S, var T) =
   for i in S(0)..<len:
     yield (i, p[i])
 
+macro rows*(x: ForLoopStmt) =
+  ## This for loop macro, iterates over `UncheckedArray[untyped]` or `ptr untyped` array arguments, with a length. 
+  ## It "yields" `(index, src1[index], src2[index], ...)`.
+  ##
+  runnableExamples:
+    var 
+      l = 3
+      a = [100, 300, 500]
+      b = ['a', 'e', 'i']
+      c = [1.1, 2.2, 3.3]
+      pa = a[0].addr
+      pb = b[0].addr
+      pc = cast[ptr UncheckedArray[float]](c[0].addr)
+
+    var tuples:seq[(int, int, char, float)]
+    for i, ta, tb, tc in rows(pa, pb, pc[], l):
+      tuples.add (i, ta, tb, tc)
+
+    doAssert(tuples[^1][0] == l-1)
+    doAssert(tuples[^1][3] == 3.3)
+  ##
+  # Warning: This does not use iterators, so we don't get type information with ForLoopStmt.
+  #   But, that allows us to mix `UncheckedArray[untyped]` and `ptr untyped` in the sources.
+  let 
+    internalCounter = genSym(nskVar, "counter") # prevents shenanigans with counter in loopBody
+    counter = x[0]
+    indices = x[1 ..< ^2]
+    sources = x[^2][1 ..< ^1] # ptr T or UncheckedArray[T]
+    length = x[^2][^1]
+    loopBody = x[^1]
+
+  var oVarSec = nnkVarSection.newTree()
+  # length could be signed or unsigned, the counter should match its type
+  oVarSec.add nnkIdentDefs.newTree(internalCounter, nnkCall.newTree(ident"typeof", length), newLit(0))
+
+  var pvars:seq[NimNode]
+  for i, source in pairs(sources):
+    pvars.add genSym(nskVar, "p" & $i)
+    oVarSec.add nnkIdentDefs.newTree(pvars[^1], newEmptyNode(), 
+      nnkDotExpr.newTree(nnkBracketExpr.newTree(source, newLit(0)), ident"addr")) # source[0].addr
+
+  var cond = infix(internalCounter, "<", length)
+
+  var whileStmtList = nnkStmtList.newTree
+  # counter is var, rest are let
+  whileStmtList.add nnkVarSection.newTree(nnkIdentDefs.newTree(counter, newEmptyNode(), internalCounter))
+  for i, index in pairs(indices):
+    whileStmtList.add nnkLetSection.newTree(nnkIdentDefs.newTree(index, newEmptyNode(), nnkBracketExpr.newTree(pvars[i])))
+
+  # Enables: sugar.collect(), increment the counter and pointers before the loopBody.
+  whileStmtList.add newCall(ident"inc", internalCounter)
+  for pv in pvars:
+    whileStmtList.add infix(pv, "+=", newLit(1))
+  whileStmtList.add loopBody
+
+  result = quote do:
+    block:
+      `oVarSec`
+      while `cond`:
+        `whileStmtList`
+
+macro mrows*(x: ForLoopStmt) =
+  ## This for loop macro, iterates over `UncheckedArray[untyped]` or `ptr untyped` array arguments, with a length.
+  ## It "yields" `(index, src1[index], src2[index], ...)` where the indexed values are mutable.
+  runnableExamples:
+    import std / sugar
+    var 
+      l = 3
+      a = [100, 300, 500]
+      b = ['a', 'e', 'i']
+      c = [1.1, 2.2, 3.3]
+      pa = a[0].addr
+      pb = b[0].addr
+      pc = cast[ptr UncheckedArray[float]](c[0].addr)
+
+    var tuples:seq[(int, int, char, float)]
+    for i, ta, tb, tc in mrows(pa, pb, pc[], l):
+      inc ta
+      tuples.add (i, ta, tb, tc)
+
+    doAssert(tuples[^1][0] == l-1)
+    doAssert(tuples[^1][3] == 3.3)
+    doAssert(tuples[0][1] == 101)
+  ##
+  # Warning: This does not use iterators, so we don't get type information with ForLoopStmt.
+  #   But, that allows us to mix `var UncheckedArray[untyped]` and `ptr untyped` in the sources.
+  let 
+    internalCounter = genSym(nskVar, "counter") # prevents shenanigans with counter in loopBody
+    counter = x[0]
+    indices = x[1 ..< ^2]
+    sources = x[^2][1 ..< ^1] # ptr T or UncheckedArray[T]
+    length = x[^2][^1]
+    loopBody = x[^1]
+
+  var oVarSec = nnkVarSection.newTree()
+  # length could be signed or unsigned, the counter should match its type
+  oVarSec.add nnkIdentDefs.newTree(internalCounter, nnkCall.newTree(ident"typeof", length), newLit(0))
+
+  var pvars:seq[NimNode]
+  for i, source in pairs(sources):
+    pvars.add genSym(nskVar, "p" & $i)
+    oVarSec.add nnkIdentDefs.newTree(pvars[^1], newEmptyNode(), 
+      nnkDotExpr.newTree(nnkBracketExpr.newTree(source, newLit(0)), ident"addr")) # source[0].addr
+
+  var cond = infix(internalCounter, "<", length)
+
+  var whileStmtList = nnkStmtList.newTree()
+  whileStmtList.add nnkVarSection.newTree(nnkIdentDefs.newTree(counter, newEmptyNode(), internalCounter))
+
+  for i, index in pairs(indices):
+    # A separate VarSection is need for each index using .byaddr. pragma, 
+    #   or the compiler will complain .byaddr. is an invalid pragma.
+    whileStmtList.add nnkVarSection.newTree(
+      nnkIdentDefs.newTree(
+        nnkPragmaExpr.newTree(index, nnkPragma.newTree(ident"byaddr")), 
+        newEmptyNode(), 
+        nnkBracketExpr.newTree(pvars[i])))
+
+  # Enables sugar.collect(), increment the counter and pointers before the loopBody.
+  whileStmtList.add newCall(ident"inc", internalCounter)
+  for pv in pvars:
+    whileStmtList.add infix(pv, "+=", newLit(1))
+  whileStmtList.add loopBody
+
+  result = quote do:
+    block:
+      `oVarSec`
+      while `cond`:
+        `whileStmtList`
+
 when isMainModule:
   import std/[strformat]
 
@@ -414,3 +546,23 @@ when isMainModule:
   echo &"a[3] = p[0] = {p[0]}"
 
   doAssert a == [0, 200, 77, 53]
+
+  var l = 3
+  var ar = [100, 300, 500]
+  var b = ['a', 'e', 'i']
+  var c = [1.1, 2.2, 3.3]
+  var pa = ar[0].addr
+  var pb = b[0].addr
+  var pc = cast[ptr UncheckedArray[float]](c[0].addr)
+
+  var tuples:seq[(int, int, char, float)]
+  for i, ta, tb, tc in mrows(pa, pb, pc[], l):
+    inc ta
+    tuples.add (i, ta, tb, tc)
+
+  doAssert(tuples[^1][0] == l-1)
+  doAssert(tuples[^1][3] == 3.3)
+  doAssert(tuples[0][1] == 101)
+
+  echo "collect mrows"
+  echo tuples
