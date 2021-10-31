@@ -90,3 +90,37 @@ suite "iterators":
 
     for i, it in mpairs(p, a.len.uint):
       check a[i] == it
+
+  test "rows":
+    var l = 3
+    var ar = [100, 300, 500]
+    var b = ['a', 'e', 'i']
+    var c = [1.1, 2.2, 3.3]
+    var pa = ar[0].addr
+    var pb = b[0].addr
+    var pc = cast[ptr UncheckedArray[float]](c[0].addr)
+
+    var tuples:seq[(int, int, char, float)]
+    for i, ta, tb, tc in rows(pa, pb, pc[], l):
+      tuples.add (i, ta, tb, tc)
+
+    check tuples[^1][0] == l-1
+    check tuples[^1][3] == 3.3
+
+  test "mrows":
+    var l = 3
+    var ar = [100, 300, 500]
+    var b = ['a', 'e', 'i']
+    var c = [1.1, 2.2, 3.3]
+    var pa = ar[0].addr
+    var pb = b[0].addr
+    var pc = cast[ptr UncheckedArray[float]](c[0].addr)
+
+    var tuples:seq[(int, int, char, float)]
+    for i, ta, tb, tc in mrows(pa, pb, pc[], l):
+      inc ta
+      tuples.add (i, ta, tb, tc)
+
+    doAssert(tuples[^1][0] == l-1)
+    doAssert(tuples[^1][3] == 3.3)
+    doAssert(tuples[0][1] == 101)
