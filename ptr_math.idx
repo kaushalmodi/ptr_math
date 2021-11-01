@@ -16,5 +16,7 @@ mitems	index.html#mitems.i,ptr.T,SomeInteger	ptr_math: mitems[T](p: ptr T; len: 
 pairs	index.html#pairs.i,,S	ptr_math: pairs[T; S: SomeInteger](uarray: UncheckedArray[T] | ptr T; len: S): (S, lent T)	
 mpairs	index.html#mpairs.i,UncheckedArray[T],S	ptr_math: mpairs[T; S: SomeInteger](uarray: var UncheckedArray[T]; len: S): (S, var T)	
 mpairs	index.html#mpairs.i,ptr.T,S	ptr_math: mpairs[T; S: SomeInteger](p: ptr T; len: S): (S, var T)	
+rows	index.html#rows.m,ForLoopStmt	ptr_math: rows(x: ForLoopStmt)	
+mrows	index.html#mrows.m,ForLoopStmt	ptr_math: mrows(x: ForLoopStmt)	
 Introduction	index.html#introduction	 Introduction	
 Source	index.html#source	 Source	
